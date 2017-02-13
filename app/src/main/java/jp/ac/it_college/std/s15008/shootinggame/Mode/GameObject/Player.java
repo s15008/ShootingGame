@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.Log;
 
 import jp.ac.it_college.std.s15008.shootinggame.GameView;
 
@@ -18,7 +19,8 @@ import jp.ac.it_college.std.s15008.shootinggame.GameView;
 public class Player extends BaseObject {
     private static final String TAG = "Player";
 
-    public boolean isInit;
+    private static final int SIZE = 80;
+
     private Bitmap mBitmap;
     public Rect mRect;
     private Paint mPaint;
@@ -28,6 +30,7 @@ public class Player extends BaseObject {
         mPaint = new Paint();
         this.mBitmap = bitmap;
         mRect = new Rect();
+        mR = SIZE;
 
         init();
     }
@@ -51,6 +54,10 @@ public class Player extends BaseObject {
         int right = left + width;
         int bottom = top + height;
         mRect.set(left, top, right, bottom);
+    }
+
+    public void hit() {
+        Log.d(TAG, "hit");
     }
 
     @Override

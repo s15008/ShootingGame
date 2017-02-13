@@ -16,6 +16,8 @@ import jp.ac.it_college.std.s15008.shootinggame.GameView;
 public class Bullet extends BaseObject {
     private static final String TAG = "Bullet";
 
+    private static final float SIZE = 20;
+
     private boolean mIsVisible;
     private Bitmap mBitmap;
     private Paint mPaint;
@@ -30,13 +32,13 @@ public class Bullet extends BaseObject {
         // テスト
         mCenterX = 0;
         mCenterY = 0;
+        mR = SIZE;
 
         init();
     }
 
     void init() {
         mIsVisible = false;
-
     }
 
     public void set(int centerX, int centerY, float alignValue) {
@@ -67,5 +69,9 @@ public class Bullet extends BaseObject {
         canvas.translate(-(mBitmap.getWidth() / 2), -(mBitmap.getHeight() / 2));
         canvas.drawBitmap(mBitmap, mCenterX, mCenterY, mPaint);
         canvas.restore();
+    }
+
+    public void hit() {
+        Log.d(TAG, "hit");
     }
 }

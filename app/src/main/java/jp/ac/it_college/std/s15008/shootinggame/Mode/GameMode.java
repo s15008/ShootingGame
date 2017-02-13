@@ -86,9 +86,12 @@ public class GameMode {
         mNextMode = mCurrentMode;
 
         // 時間計測
-        mStartTime = System.currentTimeMillis();
+
+        // エネミー生成/管理
         mCurrentLevel = 1;
         mEnemyManager.createEnemyList(mCurrentLevel);
+        mEnemyManager.setStartTime(System.currentTimeMillis());
+
         mEnemyList = mEnemyManager.getEnemyList();
 
         // デバッグ
@@ -101,7 +104,7 @@ public class GameMode {
             }
         };
 
-        mTimerHandler.postDelayed(mGotoNextMode, 8000);
+        //mTimerHandler.postDelayed(mGotoNextMode, 8000);
     }
 
     /**
@@ -110,12 +113,24 @@ public class GameMode {
      */
     public void update(MotionEvent motionEvent) {
         // オブジェクト更新処理
+        mEnemyManager.update(System.currentTimeMillis());
+        mEnemyList = mEnemyManager.getEnemyList();
         mPlayer.update();
         for (Bullet bullet : mBulletList) {
             bullet.update();
         }
         for (Enemy enemy : mEnemyList) {
             enemy.update();
+        }
+
+        // オブジェクトあたり処理
+        for (Enemy enemy : mEnemyList) {
+            for (Bullet bullet : mBulletList) {
+                if (enemy.isHitCircleToCircle(bullet)) {
+                    enemy.hit();
+                    bullet.hit();
+                }
+            }
         }
 
         // タッチ処理
