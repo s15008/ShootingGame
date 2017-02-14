@@ -95,6 +95,7 @@ public class ClearMode {
         bottomLineY = 800;
 
 
+        //TODO: 変更求む
 //        while (topLineX > 0 || bottomLineX < liner.getWidth()) {
 //            liner.drawLine(topLineX, topLineY, topLineX - 1, topLineY, paintLiner);
 //            topLineX--;
