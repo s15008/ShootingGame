@@ -1,6 +1,7 @@
 package jp.ac.it_college.std.s15008.shootinggame.Mode.GameObject;
 
 import android.graphics.Canvas;
+import android.graphics.Rect;
 
 /**
  * Created by s15008 on 17/02/06.

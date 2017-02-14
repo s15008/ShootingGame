@@ -18,14 +18,15 @@ public class Enemy extends BaseObject {
         STRAIGHT,
     }
 
+    private final int MOVE_WEIGHT = 5;
     public boolean mIsLaunched;
     public boolean mIsAlive;
     private Bitmap mBitmap;
     private Paint mPaint;
-    private final int MOVE_WEIGHT = 5;
     private float mAlignX;
     public float mLaunchTime;
     public int mType;
+
 
     public Enemy(Bitmap bitmap) {
         mPaint = new Paint();
@@ -80,5 +81,13 @@ public class Enemy extends BaseObject {
         canvas.translate(-(mBitmap.getWidth() / 2), -(mBitmap.getHeight() / 2));
         canvas.drawBitmap(mBitmap, mCenterX, mCenterY, mPaint);
         canvas.restore();
+    }
+
+    public boolean isHitGround(int groundX) {
+        if (mCenterY + mR >= groundX) {
+            return true;
+        }
+
+        return false;
     }
 }

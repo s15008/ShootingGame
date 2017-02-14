@@ -26,8 +26,6 @@ import jp.ac.it_college.std.s15008.shootinggame.Mode.GameMode;
 public class EnemyManager {
     private static final String TAG = "EnemyManager";
 
-    private static final int EN_MAX_LEVEL_1 = 10;
-
     private Context mContext;
     private long mStartTime;
 
@@ -58,39 +56,29 @@ public class EnemyManager {
     }
 
     public void createEnemyList(int level) {
-        if (level == 1) {
-            // ステージデータの読み込み
-            String fileName = "stage_data/stage1.json";
-            String text = null;
-            try {
-                text = loadTextAsset(fileName, mContext);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            // エネミーデータへの変換
-            List<JsonParser.EnemyData> enemyDataList = JsonParser.parseToEnemyDataList(text);
-            Log.d(TAG, enemyDataList.toString());
+        // ステージデータの読み込み
+        String fileName = String.format("stage_data/stage%d.json", level);
+        String text = null;
+        try {
+            text = loadTextAsset(fileName, mContext);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-            // エネミーオブジェクトの生成
-            mEnemyList.clear();
-            for (JsonParser.EnemyData enemyData : enemyDataList) {
-                Enemy enemy = new Enemy(mBitmapEnemyCarrot);
-                int type = enemyData.mType;
-                float x = enemyData.mX;
-                float y = enemyData.mY;
-                long launch = enemyData.mLaunchTime;
-                enemy.set(type, x, y, launch, 0);
-                mEnemyList.add(enemy);
-            }
+        // エネミーデータへの変換
+        List<JsonParser.EnemyData> enemyDataList = JsonParser.parseToEnemyDataList(text);
+        Log.d(TAG, enemyDataList.toString());
 
-//            for (int i = 0; i < enemyDataList.size(); i++) {
-//                Enemy enemy = new Enemy(mBitmapEnemyCarrot);
-//                int rand = new Random().nextInt(3);
-//                int w = GameView.GAME_WIDTH - (int) enemy.mR;
-//                int x = ((w / 3) * rand) + (int) enemy.mR / 2;
-//                enemy.set(0, x, 0, 1000 + 1000*i, 0);
-//                mEnemyList.add(enemy);
-//            }
+        // エネミーオブジェクトの生成
+        mEnemyList.clear();
+        for (JsonParser.EnemyData enemyData : enemyDataList) {
+            Enemy enemy = new Enemy(mBitmapEnemyCarrot);
+            int type = enemyData.mType;
+            float x = enemyData.mX;
+            float y = enemyData.mY;
+            long launch = enemyData.mLaunchTime;
+            enemy.set(type, x, y, launch, 0);
+            mEnemyList.add(enemy);
         }
     }
 
