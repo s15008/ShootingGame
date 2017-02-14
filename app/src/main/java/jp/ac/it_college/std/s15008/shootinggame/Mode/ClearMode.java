@@ -52,7 +52,7 @@ public class ClearMode {
         mGotoNextMode = new Runnable() {
             @Override
             public void run() {
-                mNextMode = GameView.Mode.OVER;
+                mNextMode = GameView.Mode.INTRO;
                 mTimerHandler.removeCallbacks(mGotoNextMode);
             }
         };

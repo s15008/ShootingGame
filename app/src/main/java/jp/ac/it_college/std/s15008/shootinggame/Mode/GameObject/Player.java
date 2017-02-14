@@ -24,36 +24,45 @@ public class Player extends BaseObject {
     // 自機
     private static final int WIDTH = 0;
     private static final int HEIGHT = 0;
-    private static final int CENTER_X = 450;
-    private static final int CENTER_Y = 1480;
-    public static final int LEFT_X = 150;
-    public static final int LEFT_Y = 1680;
-    public static final int RIGHT_X = 720;
-    public static final int RIGHT_Y = 1680;
+    private static final int CENTER_X = 448;
+    private static final int CENTER_Y = 1488;
+    public static final int LEFT_X = 160;
+    public static final int LEFT_Y = 1520;
+    public static final int RIGHT_X = 739;
+    public static final int RIGHT_Y = 1527;
 
     private static final int SIZE = 80;
-    private static final int LIFE_MAX = 10;
+    private static final int LIFE_POINT_MAX = 10;
     private Bitmap mBitmap;
     public Rect mRect;
     private Paint mPaint;
-    private int mLifePoint;
+    public int mLifePoint;
     private float mRod;
+    private boolean mIsRealBody;
 
     // 地表
     private final int GROUND_HEIGHT = 100;
     public Rect mRectGround;
 
+    // ライフバー
+    private final static int LIFE_POINT_BAR_W = 800;
+    private final static int LIFE_POINT_BAR_H = 40;
+    private final static int LIFE_POINT_BAR_X = 50;
+    private final static int LIFE_POINT_BAR_Y = 1600 - 40 - 20;
+    private final Paint mPaintLifePointBar = new Paint();
+    private Rect mRectLifePointBar;
+
     // debug
     private final Paint dPaint = new Paint();
 
 
-    public Player(Bitmap bitmap) {
+    public Player(Bitmap bitmap, boolean isRealBody) {
         // 自機
         mPaint = new Paint();
         this.mBitmap = bitmap;
         mRect = new Rect();
         mR = SIZE;
-        mRod = 0f;
+        mIsRealBody = isRealBody;
 
         // 地表
         mRectGround = new Rect(0, (GameView.GAME_HEIGHT - GROUND_HEIGHT),
@@ -62,17 +71,26 @@ public class Player extends BaseObject {
         // debug
         dPaint.setColor(Color.RED);
         dPaint.setStyle(Paint.Style.STROKE);
-        dPaint.setStrokeWidth(10);
-
-        init();
-    }
-
-    void init() {
-        mLifePoint = LIFE_MAX;
+        dPaint.setStrokeWidth(5);
 
         // 初期位置の指定
         set(CENTER_X, CENTER_Y);
+        init();
+    }
 
+    /**
+     * init
+     * モード開始時の初期化処理
+     */
+    public void init() {
+        // プレイヤーデータ初期化
+        mLifePoint = LIFE_POINT_MAX;
+        mRod = 0f;
+
+        // ライフバー初期化
+        mPaintLifePointBar.setColor(Color.GREEN);
+        mRectLifePointBar = new Rect(LIFE_POINT_BAR_X, LIFE_POINT_BAR_Y,
+                LIFE_POINT_BAR_X + LIFE_POINT_BAR_W, LIFE_POINT_BAR_Y + LIFE_POINT_BAR_H);
     }
 
     public void set(int centerX, int centerY) {
@@ -92,10 +110,12 @@ public class Player extends BaseObject {
     public void hit() {
         Log.d(TAG, "hit");
         mLifePoint--;
-
-        if (mLifePoint <= 0) {
-            Log.d(TAG, "Game over");
-        }
+        int left = LIFE_POINT_BAR_X;
+        int top = LIFE_POINT_BAR_Y;
+        int right = (int) ((double) LIFE_POINT_BAR_W * ((double) mLifePoint / (double) LIFE_POINT_MAX)) + LIFE_POINT_BAR_X;
+        int bottom = LIFE_POINT_BAR_Y + LIFE_POINT_BAR_H;
+        mRectLifePointBar.set(left, top, right, bottom);
+        Log.d(TAG, "" + mRectLifePointBar.width());
     }
 
     @Override
@@ -111,7 +131,15 @@ public class Player extends BaseObject {
         canvas.drawBitmap(mBitmap, mCenterX, mCenterY, mPaint);
         canvas.restore();
 
-        // 地表
+        // 本体以外は壺以外の描画をスキップ
+        if (!mIsRealBody) {
+            return;
+        }
+
+        // ライフポイントバー
+        canvas.drawRect(mRectLifePointBar, mPaintLifePointBar);
+
+        // debug 地表
         canvas.drawRect(mRectGround, dPaint);
     }
 
