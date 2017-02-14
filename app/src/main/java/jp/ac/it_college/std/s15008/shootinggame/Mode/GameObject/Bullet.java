@@ -18,7 +18,7 @@ public class Bullet extends BaseObject {
 
     private static final float SIZE = 20;
 
-    private boolean mIsVisible;
+    public boolean mIsVisible;
     private Bitmap mBitmap;
     private Paint mPaint;
     private final int MOVE_WEIGHT = 5;

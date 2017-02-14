@@ -26,6 +26,11 @@ public class Player extends BaseObject {
     private static final int HEIGHT = 0;
     private static final int CENTER_X = 450;
     private static final int CENTER_Y = 1480;
+    public static final int LEFT_X = 150;
+    public static final int LEFT_Y = 1680;
+    public static final int RIGHT_X = 720;
+    public static final int RIGHT_Y = 1680;
+
     private static final int SIZE = 80;
     private static final int LIFE_MAX = 10;
     private Bitmap mBitmap;
@@ -66,10 +71,15 @@ public class Player extends BaseObject {
         mLifePoint = LIFE_MAX;
 
         // 初期位置の指定
+        set(CENTER_X, CENTER_Y);
+
+    }
+
+    public void set(int centerX, int centerY) {
         int width = mBitmap.getWidth();
         int height = mBitmap.getHeight();
-        int left = CENTER_X - (width / 2);
-        int top = CENTER_Y - height;
+        int left = centerX - (width / 2);
+        int top = centerY - height;
         int right = left + width;
         int bottom = top + height;
         mRect.set(left, top, right, bottom);
@@ -77,16 +87,6 @@ public class Player extends BaseObject {
         // 将来的にこっちに移行(円形での処理)
         mCenterX = mRect.centerX();
         mCenterY = mRect.centerY();
-    }
-
-    public void set(int centerX, int centerY) {
-        int width = mBitmap.getWidth();
-        int height = mBitmap.getHeight();
-        int left = centerX - (width / 2);
-        int top = centerY - (height / 2);
-        int right = left + width;
-        int bottom = top + height;
-        mRect.set(left, top, right, bottom);
     }
 
     public void hit() {
