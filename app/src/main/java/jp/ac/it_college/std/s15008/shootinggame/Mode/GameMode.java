@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import java.io.BufferedInputStream;
@@ -46,10 +47,11 @@ public class GameMode {
 
     // キャラクターオブジェクト
     private Player mPlayer;
+    private Player mPlayerLeft;
+    private Player mPlayerRight;
     private List<Bullet> mBulletList;
     private Bitmap mBitmapBullet;
     private List<Enemy> mEnemyList;
-    private Bitmap mBitmapEnemy;
     private EnemyManager mEnemyManager;
 
     // デバッグ用
@@ -63,17 +65,19 @@ public class GameMode {
         mPaintBackground = new Paint();
         mBitmapBackground = getBitmapImageToAssets(context, "game/background_starry_sky.png");
 
-        Bitmap bitmap = getBitmapImageToAssets(context, "game/player.png");
+        Bitmap bitmap = getBitmapImageToAssets(context, "game/player_octopus_vase.png");
         mPlayer = new Player(bitmap);
+        mPlayerLeft = new Player(bitmap);
+        mPlayerLeft.set(Player.LEFT_X, Player.LEFT_Y);
+        mPlayerRight = new Player(bitmap);
+        mPlayerRight.set(Player.RIGHT_X, Player.RIGHT_Y);
 
         mBulletList = new ArrayList<>();
         mBitmapBullet = getBitmapImageToAssets(context, "game/bullet.png");
 
         mEnemyList = new ArrayList<>();
-        mBitmapEnemy = getBitmapImageToAssets(context, "game/enemy_carrot.png");
 
         mEnemyManager = new EnemyManager(context);
-
     }
 
     /**
@@ -84,8 +88,6 @@ public class GameMode {
         // モードモードの固定
         mCurrentMode = GameView.Mode.GAME;
         mNextMode = mCurrentMode;
-
-        // 時間計測
 
         // エネミー生成/管理
         mCurrentLevel = 1;
@@ -103,8 +105,6 @@ public class GameMode {
                 mTimerHandler.removeCallbacks(mGotoNextMode);
             }
         };
-
-        //mTimerHandler.postDelayed(mGotoNextMode, 8000);
     }
 
     /**
@@ -125,11 +125,23 @@ public class GameMode {
 
         // オブジェクトあたり処理
         for (Enemy enemy : mEnemyList) {
+            // 無効なエネミーはスキップする
+            if (!enemy.mIsAlive || !enemy.mIsLaunched) {
+                continue;
+            }
+
+            // 対弾
             for (Bullet bullet : mBulletList) {
                 if (enemy.isHitCircleToCircle(bullet)) {
                     enemy.hit();
                     bullet.hit();
                 }
+            }
+
+            // 対プレイヤー
+            if (enemy.isHitGround(mPlayer.mRectGround.top)) {
+                mPlayer.hit();
+                enemy.hit();
             }
         }
 
@@ -137,12 +149,23 @@ public class GameMode {
         if (motionEvent != null) {
             float touchX = motionEvent.getX();
             float touchY = motionEvent.getY();
-            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+            if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
                 mTouchX = touchX;
                 mTouchY = touchY;
-                fire(mTouchX, mTouchY);
+                fire(mTouchX, mTouchY, mPlayer);
+                fire(mTouchX, mTouchY, mPlayerLeft);
+                fire(mTouchX, mTouchY, mPlayerRight);
             }
         }
+
+        // 無効な弾をリリースする
+        for (int i = 0; i < mBulletList.size(); i++) {
+            if (!mBulletList.get(i).mIsVisible) {
+                mBulletList.remove(i);
+            }
+        }
+
+        Log.d(TAG, "bullet : " + mBulletList.size());
     }
 
     /**
@@ -158,6 +181,8 @@ public class GameMode {
 
         // オブジェクト描画
         mPlayer.draw(canvas);
+        mPlayerLeft.draw(canvas);
+        mPlayerRight.draw(canvas);
         for (Bullet bullet : mBulletList) {
             bullet.draw(canvas);
         }
@@ -191,66 +216,21 @@ public class GameMode {
             canvas.drawRect(mRect, mRectPaint);
         }
     }
-    GameMode.MyButton mMyButton;
-
-
-    public GameMode() {
-//        paintText = new Paint();
-//        paintText.setColor(Color.RED);
-//        paintText.setTextSize(25);
-//        paintText.setTextAlign(Paint.Align.CENTER);
-//        paintBackground = new Paint();
-//        paintBackground.setColor(Color.argb(255, 255, 153, 255));
-//
-//        init();
-    }
-
-    // 更新処理
-    public void update(Canvas canvas, MotionEvent motionEvent, GameView.Mode currentMode) {
-//
-//        // オブジェクトの初期化処理
-//        if (mMyButton == null) {
-//            int x = canvas.getWidth() - (100 * 2);
-//            int y = canvas.getHeight() - (100 * 2);
-//            mMyButton = new GameMode.MyButton(x, y - (canvas.getHeight() / 4));
-//        }
-//
-//        // ゲームモードじゃない場合はこうしん処理はスキップする
-//        if (currentMode != mCurrentMode) {
-//            return;
-//        }
-//
-//        // タッチ処理
-//        if (motionEvent != null) {
-//            float touchX = motionEvent.getX();
-//            float touchY = motionEvent.getY();
-//            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-//                mTouchX = touchX;
-//                mTouchY = touchY;
-//                if (mMyButton.mRect.contains((int) mTouchX, (int) mTouchY)) {
-//                    mNextMode = GameView.Mode.OVER;
-//                }
-//            } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-//                mTouchX = touchX;
-//                mTouchY = touchY;
-//            } else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
-//                mTouchX = touchX;
-//                mTouchY = touchY;
-//            }
-//        }
-    }
 
     /**
      * プレイヤーのショット処理
      * @param x
      * @param y
      */
-    private void fire(float x, float y) {
-        float alignX = (x - mPlayer.mRect.centerX()) / Math.abs(y - mPlayer.mRect.centerY());
+    private void fire(float x, float y, Player player) {
+        float alignX = (x - player.mRect.centerX()) / Math.abs(y - player.mRect.centerY());
 
         Bullet bullet = new Bullet(mBitmapBullet);
-        bullet.set(mPlayer.mRect.centerX(), mPlayer.mRect.centerY(), alignX);
+        bullet.set(player.mRect.centerX(), player.mRect.centerY() - 10, alignX);
         mBulletList.add(0, bullet);
+
+        // 砲塔角度調整
+        player.setAngle(x, y);
     }
 
 
