@@ -47,6 +47,8 @@ public class GameView extends View {
     private OverMode mOverMode;
     private ClearMode mClearMode;
 
+    public int mCurrentLevel;
+
     // デバッグ用
     Paint paintText = new Paint();
 
@@ -59,6 +61,9 @@ public class GameView extends View {
      */
     public GameView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        // タッチイベント関係
+        mMotionEvent = null;
+
         mCurrentMode = Mode.INTRO;
 
         // ゲームモードオブジェクト
@@ -67,8 +72,7 @@ public class GameView extends View {
         mOverMode = new OverMode(context);
         mClearMode = new ClearMode(context);
 
-        // タッチイベント関係
-        mMotionEvent = null;
+        mCurrentLevel = 1;
 
         // デバッグ用
         paintText = new Paint();
@@ -125,7 +129,7 @@ public class GameView extends View {
             // ステージイントロ時の処理
             if (mIntroMode.mCurrentMode == Mode.INIT || mIntroMode.mCurrentMode != Mode.INTRO) {
                 // モードの初期化
-                mIntroMode.init();
+                mIntroMode.init(mCurrentLevel);
             }
 
             mIntroMode.update(mMotionEvent);
@@ -141,7 +145,7 @@ public class GameView extends View {
             // ゲーム時の処理
             if (mGameMode.mCurrentMode == Mode.INIT || mGameMode.mCurrentMode != Mode.GAME) {
                 // モードの初期化
-                mGameMode.init();
+                mGameMode.init(mCurrentLevel);
             }
 
             mGameMode.update(mMotionEvent);
@@ -167,6 +171,8 @@ public class GameView extends View {
                 // モード遷移
                 mCurrentMode = mClearMode.mNextMode;
                 mClearMode.mCurrentMode = mClearMode.mNextMode;
+                // レベルアップ処理
+                mCurrentLevel++;
                 invalidate();
             }
         } else if (mCurrentMode == Mode.OVER) {
@@ -183,6 +189,8 @@ public class GameView extends View {
                 // モード遷移
                 mCurrentMode = mOverMode.mNextMode;
                 mOverMode.mCurrentMode = mOverMode.mNextMode;
+                // レベル初期化処理
+                mCurrentLevel = 1;
                 invalidate();
             }
         }

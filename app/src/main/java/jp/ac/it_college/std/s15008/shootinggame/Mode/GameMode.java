@@ -33,7 +33,7 @@ public class GameMode {
 
     public GameView.Mode mCurrentMode;
     public GameView.Mode mNextMode;
-    public int mCurrentLevel;
+    private int mCurrentLevel;
 
     public long mStartTime;
 
@@ -84,7 +84,7 @@ public class GameMode {
      * init
      * モード開始時の初期化を行う
      */
-    public void init() {
+    public void init(int currentLevel) {
         // モードモードの固定
         mCurrentMode = GameView.Mode.GAME;
         mNextMode = mCurrentMode;
@@ -95,7 +95,7 @@ public class GameMode {
         mPlayerRight.init();
 
         // エネミー生成/管理
-        mCurrentLevel = 1;
+        mCurrentLevel = currentLevel;
         mEnemyManager.createEnemyList(mCurrentLevel);
         mEnemyManager.setStartTime(System.currentTimeMillis());
 
