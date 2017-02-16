@@ -20,6 +20,8 @@ public class ClearMode {
     public GameView.Mode mCurrentMode;
     public GameView.Mode mNextMode;
 
+    public GameView.GameData mGameData;
+
     // デバッグ用モード遷移用
     Handler mTimerHandler;
     Runnable mGotoNextMode;
@@ -43,9 +45,11 @@ public class ClearMode {
      * init
      * モード開始前の初期化
      */
-    public void init() {
+    public void init(GameView.GameData gameData) {
         mCurrentMode = GameView.Mode.CLEAR;
         mNextMode = mCurrentMode;
+
+        mGameData = gameData;
 
         // モード遷移処理
         mTimerHandler = new Handler();
@@ -53,11 +57,17 @@ public class ClearMode {
             @Override
             public void run() {
                 mNextMode = GameView.Mode.INTRO;
+                mGameData.mLevel++;
+                if (mGameData.mLevel >= 3) {
+                    mGameData.mLevel = 1;
+                }
                 mTimerHandler.removeCallbacks(mGotoNextMode);
             }
         };
 
         mTimerHandler.postDelayed(mGotoNextMode, 3000);
+
+        Log.d(TAG, String.format("LEVEL : %d\tSCORE : %d", mGameData.mLevel, mGameData.mScore));
     }
 
     public void draw(Canvas canvas) {
@@ -75,7 +85,7 @@ public class ClearMode {
 
         int height = 300;
         int width = score.getWidth() / 2;
-        String Score = "Score:  ";
+        String Score = "Score: " + mGameData.mScore;
         for (int i = 0; i < 5; i++) {
             score.drawText(Score + i, width, height, paintScore);
             height = height + textSize;

@@ -37,6 +37,8 @@ public class OverMode {
     public GameView.Mode mCurrentMode;
     public GameView.Mode mNextMode;
 
+    public GameView.GameData mGameData;
+
     // スケール倍率
     private float mScaleX;
     private float mScaleY;
@@ -148,9 +150,12 @@ public class OverMode {
     }
 
     // 初期化処理
-    public void init(float scaleX, float scaleY) {
+    public void init(GameView.GameData gameData, float scaleX, float scaleY) {
         mCurrentMode = GameView.Mode.OVER;
         mNextMode = mCurrentMode;
+
+        mGameData = gameData;
+
         mScaleX = scaleX;
         mScaleY = scaleY;
 
@@ -208,6 +213,8 @@ public class OverMode {
         mButtonLogo.mValueAnimation.start();
         mButtonContinue.mValueAnimation.start();
         mButtonTitleBack.mValueAnimation.start();
+
+        Log.d(TAG, String.format("LEVEL : %d\tSCORE : %d", mGameData.mLevel, mGameData.mScore));
     }
 
     /**
@@ -254,6 +261,7 @@ public class OverMode {
                 }
                 if (mButtonContinue.mRect.contains((int) mTouchX, (int) mTouchY)) {
                     // Continueボタンをタッチしたとき
+                    mGameData.init();
                     mNextMode = GameView.Mode.INTRO;
                 }
                 if (mButtonTitleBack.mRect.contains((int) mTouchX, (int) mTouchY)) {
