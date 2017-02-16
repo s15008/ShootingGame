@@ -29,13 +29,15 @@ public class IntroMode {
     Handler mTimerHandler;
     Runnable mGotoNextMode;
 
-    private int mCurrentLevel;
+    private GameView.GameData mGameData;
+
 
     // デバッグ用
     Paint paintText;
 
     Context context;
 
+    MyButton mMyButton;
     class MyButton {
         private final Paint mRectPaint;
         private Rect mRect;
@@ -53,7 +55,6 @@ public class IntroMode {
             canvas.drawRect(mRect, mRectPaint);
         }
     }
-    MyButton mMyButton;
 
 
     public IntroMode(Context context) {
@@ -68,10 +69,10 @@ public class IntroMode {
     }
 
     // 初期化処理
-    public void init(int currentLevel) {
+    public void init(GameView.GameData gameData) {
         mCurrentMode = GameView.Mode.INTRO;
         mNextMode = mCurrentMode;
-        mCurrentLevel = currentLevel;
+        mGameData = gameData;
 
         // モード遷移処理
         mTimerHandler = new Handler();
@@ -84,6 +85,7 @@ public class IntroMode {
         };
 
         mTimerHandler.postDelayed(mGotoNextMode, 3000);
+        Log.d(TAG, String.format("LEVEL : %d\tSCORE : %d", mGameData.mLevel, mGameData.mScore));
     }
 
     // 更新処理
@@ -104,6 +106,7 @@ public class IntroMode {
 
     // 描画処理
     public void draw(Canvas canvas) {
-        canvas.drawText("Intro Mode  LEVEL " + mCurrentLevel, GameView.GAME_WIDTH / 2, GameView.GAME_HEIGHT / 2, paintText);
+        canvas.drawText("Intro Mode  LEVEL " + mGameData.mLevel + "  SCORE " + mGameData.mScore,
+                GameView.GAME_WIDTH / 2, GameView.GAME_HEIGHT / 2, paintText);
     }
 }

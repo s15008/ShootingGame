@@ -47,7 +47,21 @@ public class GameView extends View {
     private OverMode mOverMode;
     private ClearMode mClearMode;
 
-    public int mCurrentLevel;
+    // ゲームプレイデータ
+    public GameData mGameData;
+    public class GameData {
+        public int mLevel;
+        public int mScore;
+
+        public GameData() {
+            init();
+        }
+
+        public void init() {
+            mLevel = 1;
+            mScore = 0;
+        }
+    }
 
     // デバッグ用
     Paint paintText = new Paint();
@@ -72,7 +86,7 @@ public class GameView extends View {
         mOverMode = new OverMode(context);
         mClearMode = new ClearMode(context);
 
-        mCurrentLevel = 1;
+        mGameData = new GameData();
 
         // デバッグ用
         paintText = new Paint();
@@ -129,14 +143,15 @@ public class GameView extends View {
             // ステージイントロ時の処理
             if (mIntroMode.mCurrentMode == Mode.INIT || mIntroMode.mCurrentMode != Mode.INTRO) {
                 // モードの初期化
-                mIntroMode.init(mCurrentLevel);
+                mGameData.init();
+                mIntroMode.init(mGameData);
             }
 
             mIntroMode.update(mMotionEvent);
             mIntroMode.draw(canvas);
 
             if (mIntroMode.mNextMode != mIntroMode.mCurrentMode) {
-                // モード遷移
+                // モード遷移mCurrentLevel
                 mCurrentMode = mIntroMode.mNextMode;
                 mIntroMode.mCurrentMode = mIntroMode.mNextMode;
                 invalidate();
@@ -145,7 +160,7 @@ public class GameView extends View {
             // ゲーム時の処理
             if (mGameMode.mCurrentMode == Mode.INIT || mGameMode.mCurrentMode != Mode.GAME) {
                 // モードの初期化
-                mGameMode.init(mCurrentLevel);
+                mGameMode.init(mGameData);
             }
 
             mGameMode.update(mMotionEvent);
@@ -161,7 +176,7 @@ public class GameView extends View {
             // ステージクリア時の処理
             if (mClearMode.mCurrentMode == Mode.INIT || mClearMode.mCurrentMode != Mode.CLEAR) {
                 // モードの初期化
-                mClearMode.init();
+                mClearMode.init(mGameData);
             }
 
             mClearMode.update(mMotionEvent);
@@ -171,18 +186,13 @@ public class GameView extends View {
                 // モード遷移
                 mCurrentMode = mClearMode.mNextMode;
                 mClearMode.mCurrentMode = mClearMode.mNextMode;
-                // レベルアップ処理
-                mCurrentLevel++;
-                if (mCurrentLevel >= 2) {
-                    mCurrentLevel = 1;
-                }
                 invalidate();
             }
         } else if (mCurrentMode == Mode.OVER) {
             // ゲームオーバー時の処理
             if (mOverMode.mCurrentMode == Mode.INIT || mOverMode.mCurrentMode != Mode.OVER) {
                 // モードの初期化
-                mOverMode.init(mScaleX, mScaleY);
+                mOverMode.init(mGameData, mScaleX, mScaleY);
             }
 
             mOverMode.update(mMotionEvent);
@@ -192,8 +202,6 @@ public class GameView extends View {
                 // モード遷移
                 mCurrentMode = mOverMode.mNextMode;
                 mOverMode.mCurrentMode = mOverMode.mNextMode;
-                // レベル初期化処理
-                mCurrentLevel = 1;
                 invalidate();
             }
         }

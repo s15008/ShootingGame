@@ -33,8 +33,7 @@ public class GameMode {
 
     public GameView.Mode mCurrentMode;
     public GameView.Mode mNextMode;
-    private int mCurrentLevel;
-    private int mScore;
+    private GameView.GameData mGameData;
 
     public long mStartTime;
 
@@ -85,7 +84,7 @@ public class GameMode {
      * init
      * モード開始時の初期化を行う
      */
-    public void init(int currentLevel) {
+    public void init(GameView.GameData gameData) {
         // モードモードの固定
         mCurrentMode = GameView.Mode.GAME;
         mNextMode = mCurrentMode;
@@ -96,8 +95,8 @@ public class GameMode {
         mPlayerRight.init();
 
         // エネミー生成/管理
-        mCurrentLevel = currentLevel;
-        mEnemyManager.createEnemyList(mCurrentLevel);
+        mGameData = gameData;
+        mEnemyManager.createEnemyList(mGameData.mLevel);
         mEnemyManager.setStartTime(System.currentTimeMillis());
 
         mEnemyList = mEnemyManager.getEnemyList();
@@ -111,6 +110,8 @@ public class GameMode {
                 mTimerHandler.removeCallbacks(mGotoNextMode);
             }
         };
+
+        Log.d(TAG, String.format("LEVEL : %d\tSCORE : %d", mGameData.mLevel, mGameData.mScore));
     }
 
     /**
@@ -140,6 +141,7 @@ public class GameMode {
             for (Bullet bullet : mBulletList) {
                 if (enemy.isHitCircleToCircle(bullet)) {
                     enemy.hit();
+                    mGameData.mScore += 1000;
                     bullet.hit();
                 }
             }
@@ -151,6 +153,7 @@ public class GameMode {
                 if (mPlayer.mLifePoint <= 0) {
                     Log.d(TAG, "LifePoint: " + mPlayer.mLifePoint);
                     changeGameOverMode();
+                    return;
                 }
             }
         }
