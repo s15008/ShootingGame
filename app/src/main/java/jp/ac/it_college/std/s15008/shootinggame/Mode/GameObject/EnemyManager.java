@@ -14,9 +14,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import jp.ac.it_college.std.s15008.shootinggame.GameView;
 import jp.ac.it_college.std.s15008.shootinggame.Mode.GameMode;
 
 /**

@@ -30,13 +30,13 @@
         android:layout_height="match_parent"
         android:layout_weight="2"
         android:gravity="center">
-        <Button
-            android:text="GAME START"
+        <ImageButton
+            android:src="@drawable/start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/button"
+            android:id="@+id/image_button"
+            android:scaleType="fitCenter"
+            android:background="@null"
             />
     </LinearLayout>
 

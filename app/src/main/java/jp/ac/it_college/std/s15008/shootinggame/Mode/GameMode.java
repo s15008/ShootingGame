@@ -33,7 +33,7 @@ public class GameMode {
 
     public GameView.Mode mCurrentMode;
     public GameView.Mode mNextMode;
-    public int mCurrentLevel;
+    private int mCurrentLevel;
 
     public long mStartTime;
 
@@ -66,10 +66,10 @@ public class GameMode {
         mBitmapBackground = getBitmapImageToAssets(context, "game/background_starry_sky.png");
 
         Bitmap bitmap = getBitmapImageToAssets(context, "game/player_octopus_vase.png");
-        mPlayer = new Player(bitmap);
-        mPlayerLeft = new Player(bitmap);
+        mPlayer = new Player(bitmap, true);
+        mPlayerLeft = new Player(bitmap, false);
         mPlayerLeft.set(Player.LEFT_X, Player.LEFT_Y);
-        mPlayerRight = new Player(bitmap);
+        mPlayerRight = new Player(bitmap, false);
         mPlayerRight.set(Player.RIGHT_X, Player.RIGHT_Y);
 
         mBulletList = new ArrayList<>();
@@ -84,24 +84,29 @@ public class GameMode {
      * init
      * モード開始時の初期化を行う
      */
-    public void init() {
+    public void init(int currentLevel) {
         // モードモードの固定
         mCurrentMode = GameView.Mode.GAME;
         mNextMode = mCurrentMode;
 
+        // プレイヤー初期化
+        mPlayer.init();
+        mPlayerLeft.init();
+        mPlayerRight.init();
+
         // エネミー生成/管理
-        mCurrentLevel = 1;
+        mCurrentLevel = currentLevel;
         mEnemyManager.createEnemyList(mCurrentLevel);
         mEnemyManager.setStartTime(System.currentTimeMillis());
 
         mEnemyList = mEnemyManager.getEnemyList();
 
-        // デバッグ
+        // モード遷移遅延用
         mTimerHandler = new Handler();
         mGotoNextMode = new Runnable() {
             @Override
             public void run() {
-                mNextMode = GameView.Mode.CLEAR;
+                mNextMode = GameView.Mode.OVER;
                 mTimerHandler.removeCallbacks(mGotoNextMode);
             }
         };
@@ -142,6 +147,20 @@ public class GameMode {
             if (enemy.isHitGround(mPlayer.mRectGround.top)) {
                 mPlayer.hit();
                 enemy.hit();
+                if (mPlayer.mLifePoint <= 0) {
+                    Log.d(TAG, "LifePoint: " + mPlayer.mLifePoint);
+                    changeGameOverMode();
+                }
+            }
+        }
+
+        int enemyCount = mEnemyList.size();
+        for (Enemy enemy : mEnemyList) {
+            if (enemy.mIsLaunched && !enemy.mIsAlive) {
+                enemyCount--;
+                if (enemyCount <= 0) {
+                    changeGameClearMode();
+                }
             }
         }
 
@@ -149,7 +168,7 @@ public class GameMode {
         if (motionEvent != null) {
             float touchX = motionEvent.getX();
             float touchY = motionEvent.getY();
-            if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 mTouchX = touchX;
                 mTouchY = touchY;
                 fire(mTouchX, mTouchY, mPlayer);
@@ -164,8 +183,6 @@ public class GameMode {
                 mBulletList.remove(i);
             }
         }
-
-        Log.d(TAG, "bullet : " + mBulletList.size());
     }
 
     /**
@@ -196,6 +213,14 @@ public class GameMode {
         paint.setTextSize(30);
         int h = GameView.GAME_HEIGHT;
         canvas.drawText(String.format("TouchX : %f\tTouchY : %f", mTouchX, mTouchY), 0, h - (h / 3), paint);
+
+        int enemyCount = mEnemyList.size();
+        for (Enemy enemy : mEnemyList) {
+            if (enemy.mIsLaunched && !enemy.mIsAlive) {
+                enemyCount--;
+            }
+        }
+        canvas.drawText(String.format("ENEMY : %d", enemyCount), 0, paint.getTextSize(), paint);
     }
 
 
@@ -231,6 +256,14 @@ public class GameMode {
 
         // 砲塔角度調整
         player.setAngle(x, y);
+    }
+
+    private void changeGameOverMode() {
+        mTimerHandler.post(mGotoNextMode);
+    }
+
+    private void changeGameClearMode() {
+        mNextMode = GameView.Mode.CLEAR;
     }
 
 

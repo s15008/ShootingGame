@@ -29,6 +29,8 @@ public class IntroMode {
     Handler mTimerHandler;
     Runnable mGotoNextMode;
 
+    private int mCurrentLevel;
+
     // デバッグ用
     Paint paintText;
 
@@ -66,9 +68,10 @@ public class IntroMode {
     }
 
     // 初期化処理
-    public void init() {
+    public void init(int currentLevel) {
         mCurrentMode = GameView.Mode.INTRO;
         mNextMode = mCurrentMode;
+        mCurrentLevel = currentLevel;
 
         // モード遷移処理
         mTimerHandler = new Handler();
@@ -101,6 +104,6 @@ public class IntroMode {
 
     // 描画処理
     public void draw(Canvas canvas) {
-        canvas.drawText("Intro Mode", GameView.GAME_WIDTH / 2, GameView.GAME_HEIGHT / 2, paintText);
+        canvas.drawText("Intro Mode  LEVEL " + mCurrentLevel, GameView.GAME_WIDTH / 2, GameView.GAME_HEIGHT / 2, paintText);
     }
 }
