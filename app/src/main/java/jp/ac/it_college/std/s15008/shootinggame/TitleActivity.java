@@ -5,6 +5,10 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.CycleInterpolator;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 public class TitleActivity extends Activity {
@@ -14,16 +18,23 @@ public class TitleActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_title);
 
-//        ImageView image = (ImageView)findViewById(R.id.test);
-//        image.setImageResource(R.drawable.background_starry_sky);
-        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+        ImageButton button = (ImageButton)findViewById(R.id.image_button);
+        AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0.1f);
+        alphaAnimation.setDuration(1000);
+        alphaAnimation.setRepeatCount(Animation.INFINITE);
+        alphaAnimation.setRepeatMode(Animation.REVERSE);
+        button.startAnimation(alphaAnimation);
+
+        findViewById(R.id.image_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+                
                 startActivity(new Intent(TitleActivity.this, GameActivity.class));
             }
         });
-    }
 
+
+    }
     @Override
     protected void onResume() {
         super.onResume();
