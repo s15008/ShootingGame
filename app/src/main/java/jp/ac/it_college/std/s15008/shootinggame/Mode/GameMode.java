@@ -34,6 +34,7 @@ public class GameMode {
     public GameView.Mode mCurrentMode;
     public GameView.Mode mNextMode;
     private int mCurrentLevel;
+    private int mScore;
 
     public long mStartTime;
 

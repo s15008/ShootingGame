@@ -96,15 +96,6 @@ public class ClearMode {
 
 
         //TODO: 変更求む
-//        while (topLineX > 0 || bottomLineX < liner.getWidth()) {
-//            liner.drawLine(topLineX, topLineY, topLineX - 1, topLineY, paintLiner);
-//            topLineX--;
-//            Log.d("lineXXXXXXXXX", String.valueOf(topLineX));
-//            liner.drawLine(bottomLineX, bottomLineY, bottomLineX + 1, bottomLineY, paintLiner);
-//            bottomLineX++;
-//            Log.d("bottomlineXXXXXXXXXXXXX", String.valueOf(bottomLineX));
-//        }
-//        paintScore.setTextSkewX((float) -0.5f);
 
         return paintLiner;
     }
