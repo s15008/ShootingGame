@@ -173,6 +173,9 @@ public class GameView extends View {
                 mClearMode.mCurrentMode = mClearMode.mNextMode;
                 // レベルアップ処理
                 mCurrentLevel++;
+                if (mCurrentLevel >= 2) {
+                    mCurrentLevel = 1;
+                }
                 invalidate();
             }
         } else if (mCurrentMode == Mode.OVER) {

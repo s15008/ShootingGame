@@ -106,7 +106,7 @@ public class GameMode {
         mGotoNextMode = new Runnable() {
             @Override
             public void run() {
-                mNextMode = GameView.Mode.CLEAR;
+                mNextMode = GameView.Mode.OVER;
                 mTimerHandler.removeCallbacks(mGotoNextMode);
             }
         };
@@ -168,7 +168,7 @@ public class GameMode {
         if (motionEvent != null) {
             float touchX = motionEvent.getX();
             float touchY = motionEvent.getY();
-            if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 mTouchX = touchX;
                 mTouchY = touchY;
                 fire(mTouchX, mTouchY, mPlayer);
