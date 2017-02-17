@@ -1,9 +1,12 @@
 package jp.ac.it_college.std.s15008.shootinggame.Mode;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -26,19 +29,31 @@ public class ClearMode {
     Handler mTimerHandler;
     Runnable mGotoNextMode;
 
-    Paint paintLiner;
+    Paint mPaintLiner;
+    Bitmap mBitmapLiner;
     Paint paintScore;
     private int textSize = 75;
 
-    private int topLineX;
-    private int topLineY;
-    private int bottomLineX;
-    private int bottomLineY;
+    private boolean startScore;
+    private ValueAnimator mValueAnimation;
+    private int line_x;
 
 
     public ClearMode(Context context) {
         mCurrentMode = GameView.Mode.INIT;
         mNextMode = mCurrentMode;
+
+
+        mPaintLiner = new Paint();
+        mBitmapLiner = GameMode.getBitmapImageToAssets(context, "clear/score_line.png");
+
+
+        paintScore = new Paint();
+        paintScore.setColor(Color.BLUE);
+        paintScore.setAntiAlias(true);   //文字をなめらかにする処理
+        paintScore.setTextSize(textSize);
+        paintScore.setTextAlign(Paint.Align.CENTER);
+        paintScore.setTextSkewX((float) -0.5f); // 斜め文字
     }
 
     /**
@@ -50,6 +65,21 @@ public class ClearMode {
         mNextMode = mCurrentMode;
 
         mGameData = gameData;
+        startScore = false;
+
+        line_x = GameView.GAME_WIDTH;
+        mValueAnimation = ValueAnimator.ofInt(0, GameView.GAME_WIDTH);
+        mValueAnimation.setDuration(1000);
+        mValueAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                line_x = (int)valueAnimator.getAnimatedValue();
+                Log.d(TAG, (int)valueAnimator.getAnimatedValue() + "");
+            }
+        });
+
+        mValueAnimation.start();
+
 
         // モード遷移処理
         mTimerHandler = new Handler();
@@ -65,60 +95,45 @@ public class ClearMode {
             }
         };
 
-        mTimerHandler.postDelayed(mGotoNextMode, 3000);
+        mTimerHandler.postDelayed(mGotoNextMode, 7000);
 
         Log.d(TAG, String.format("LEVEL : %d\tSCORE : %d", mGameData.mLevel, mGameData.mScore));
     }
 
     public void draw(Canvas canvas) {
-        setDrawScore(canvas);
         setDrawLiner(canvas);
+        if (startScore) {
+            setDrawScore(canvas);
+        }
     }
 
     private Paint setDrawScore(Canvas score) {
-        paintScore = new Paint();
-        paintScore.setColor(Color.BLUE);
-        paintScore.setAntiAlias(true);   //文字をなめらかにする処理
-        paintScore.setTextSize(textSize);
-        paintScore.setTextAlign(Paint.Align.CENTER);
-        paintScore.setTextSkewX((float) -0.5f); // 斜め文字
 
-        int height = 300;
-        int width = score.getWidth() / 2;
-        String Score = "Score: " + mGameData.mScore;
-        for (int i = 0; i < 5; i++) {
-            score.drawText(Score + i, width, height, paintScore);
-            height = height + textSize;
-        }
+        int height = GameView.GAME_HEIGHT / 2;
+        int width = GameView.GAME_WIDTH / 2;
+        String wave = "Wave" + mGameData.mLevel;
+        String waveScore = "Score:   " + mGameData.mScore;
+        score.drawText(wave, width, height - textSize, paintScore);
+        score.drawText(waveScore, width, height + textSize, paintScore);
 
         return paintScore;
     }
 
     private Paint setDrawLiner(Canvas liner) {
-        paintLiner = new Paint();
-        paintLiner.setColor(Color.BLACK);
-        paintLiner.setAntiAlias(true);   //文字をなめらかにする処理
 
-        topLineX = liner.getWidth();
-        topLineY = 200;
-        bottomLineX = 0;
-        bottomLineY = 800;
 
 
         //TODO: 変更求む
+        liner.drawBitmap(mBitmapLiner, GameView.GAME_WIDTH - line_x, GameView.GAME_HEIGHT / 2 - 200, mPaintLiner);
+        liner.drawBitmap(mBitmapLiner, line_x - GameView.GAME_WIDTH, GameView.GAME_HEIGHT / 2 + 200, mPaintLiner);
 
-        return paintLiner;
+        return mPaintLiner;
     }
 
     public void update(MotionEvent motionEvent) {
-        // モード遷移はinit()で行っています
-        // init()はモード開始時に一回処理されるメソッドです
+        if (!mValueAnimation.isRunning()) {
+            startScore = true;
+        }
 
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                mNextMode = GameView.Mode.INTRO;
-//            }
-//        }, 3000);
     }
 }
