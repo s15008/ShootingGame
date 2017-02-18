@@ -118,7 +118,7 @@ public class GameMode {
      * update
      * 毎フレームの更新処理
      */
-    public void update(MotionEvent motionEvent) {
+    public void update(GameView.ScaledMotionEvent scaledMotionEvent) {
         // オブジェクト更新処理
         mEnemyManager.update(System.currentTimeMillis());
         mEnemyList = mEnemyManager.getEnemyList();
@@ -169,15 +169,15 @@ public class GameMode {
         }
 
         // タッチ処理
-        if (motionEvent != null) {
-            float touchX = motionEvent.getX();
-            float touchY = motionEvent.getY();
-            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                mTouchX = touchX;
-                mTouchY = touchY;
-                fire(mTouchX, mTouchY, mPlayer);
-                fire(mTouchX, mTouchY, mPlayerLeft);
-                fire(mTouchX, mTouchY, mPlayerRight);
+        if (scaledMotionEvent.isTouch()) {
+            float touchX = scaledMotionEvent.getX();
+            float touchY = scaledMotionEvent.getY();
+
+
+            if (scaledMotionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                fire(touchX, touchY, mPlayer);
+                fire(touchX, touchY, mPlayerLeft);
+                fire(touchX, touchY, mPlayerRight);
             }
         }
 

@@ -89,17 +89,13 @@ public class IntroMode {
     }
 
     // 更新処理
-    public void update(MotionEvent motionEvent) {
-        // モード遷移はinit()で行っています
-        // init()はモード開始時に一回処理されるメソッドです
-
+    public void update(GameView.ScaledMotionEvent scaledMotionEvent) {
         // タッチ処理
-        if (motionEvent != null) {
-            float touchX = motionEvent.getX();
-            float touchY = motionEvent.getY();
-            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-            } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-            } else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+        if (scaledMotionEvent.isTouch()) {
+            float touchX = scaledMotionEvent.getX();
+            float touchY = scaledMotionEvent.getY();
+
+            if (scaledMotionEvent.getAction() == MotionEvent.ACTION_DOWN) {
             }
         }
     }

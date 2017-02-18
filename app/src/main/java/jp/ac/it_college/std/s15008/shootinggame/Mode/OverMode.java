@@ -43,9 +43,6 @@ public class OverMode {
     private float mScaleX;
     private float mScaleY;
 
-    private float mTouchX;
-    private float mTouchY;
-
     // 画像イメージ
     private Bitmap mBitmapLogo;
     private MyImageButton mButtonLogo;
@@ -244,48 +241,37 @@ public class OverMode {
 
 
     // 更新処理
-    public void update(MotionEvent motionEvent) {
+    public void update(GameView.ScaledMotionEvent scaledMotionEvent) {
         // タッチ処理
-        if (motionEvent != null) {
-            float touchX = motionEvent.getX();
-            float touchY = motionEvent.getY();
-            if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                // タッチの座標を倍率に合わせて補正する
-                mTouchX = touchX / mScaleX;
-                mTouchY = touchY / mScaleY;
-
-                if (mButtonLogo.mRect.contains((int) mTouchX, (int) mTouchY)) {
+        if (scaledMotionEvent.isTouch()) {
+            float touchX = scaledMotionEvent.getX();
+            float touchY = scaledMotionEvent.getY();
+            if (scaledMotionEvent.getAction() == MotionEvent.ACTION_UP) {
+                if (mButtonLogo.mRect.contains((int) touchX, (int) touchY)) {
                     // GameOverボタンをタッチしたとき
                     mSoundPool.play(mSoundWolf, 1f, 1f, 0, 0, 1);
                     mButtonLogo.mValueAnimation.reverse();
                 }
-                if (mButtonContinue.mRect.contains((int) mTouchX, (int) mTouchY)) {
+                if (mButtonContinue.mRect.contains((int) touchX, (int) touchY)) {
                     // Continueボタンをタッチしたとき
                     mGameData.init();
                     mNextMode = GameView.Mode.INTRO;
                 }
-                if (mButtonTitleBack.mRect.contains((int) mTouchX, (int) mTouchY)) {
+                if (mButtonTitleBack.mRect.contains((int) touchX, (int) touchY)) {
                     // TitleBackボタンをタッチしたとき
-                    Toast.makeText(mContext, "タイトルアクティビティに遷移する", Toast.LENGTH_SHORT).show();
                     mContext.startActivity(new Intent(mContext, TitleActivity.class));
                 }
-            } else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
-                // タッチの座標を倍率に合わせて補正する
-                mTouchX = touchX / mScaleX;
-                mTouchY = touchY / mScaleY;
             }
         }
     }
 
     // 描画処理
     public void draw(Canvas canvas) {
-        canvas.drawRect(0, 0, GameView.GAME_WIDTH, GameView.GAME_HEIGHT, paintBackground);
-        canvas.drawText(
-                String.format("TouchX : %f\nTouchY : %f", mTouchX * mScaleX, mTouchY * mScaleY),
-                GameView.GAME_WIDTH/2, GameView.GAME_HEIGHT/2 - 100, paintText);
-
         mButtonLogo.draw(canvas);
         mButtonContinue.draw(canvas);
         mButtonTitleBack.draw(canvas);
+
+        // デバッグ描画
+        canvas.drawRect(0, 0, GameView.GAME_WIDTH, GameView.GAME_HEIGHT, paintBackground);
     }
 }

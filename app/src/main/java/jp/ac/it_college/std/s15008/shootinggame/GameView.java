@@ -28,7 +28,39 @@ public class GameView extends View {
     private float mScaleX;
     private float mScaleY;
 
-    private MotionEvent mMotionEvent;
+    private ScaledMotionEvent mScaledMotionEvent;
+
+    // タッチイベント(スケール済みのラッパー)
+    public class ScaledMotionEvent {
+        private MotionEvent mMotionEvent;
+        private float mScaledX;
+        private float mScaledY;
+
+        public ScaledMotionEvent(float scaledX, float scaledY) {
+            this.mScaledX = scaledX;
+            this.mScaledY = scaledY;
+        }
+
+        public void setMotionEvent(MotionEvent motionEvent) {
+            this.mMotionEvent = motionEvent;
+        }
+
+        public boolean isTouch() {
+            return mMotionEvent != null;
+        }
+
+        public int getAction() {
+            return mMotionEvent.getAction();
+        }
+
+        public float getX() {
+            return mMotionEvent.getX() / mScaledX;
+        }
+
+        public float getY() {
+            return mMotionEvent.getY() / mScaledY;
+        }
+    }
 
     // ゲームモード
     public enum Mode {
@@ -48,7 +80,6 @@ public class GameView extends View {
     private ClearMode mClearMode;
 
     // ゲームプレイデータ
-
     public GameData mGameData;
     public class GameData {
         public static final int LEVEL_DEFAULT = 1;
@@ -80,7 +111,7 @@ public class GameView extends View {
     public GameView(Context context, AttributeSet attrs) {
         super(context, attrs);
         // タッチイベント関係
-        mMotionEvent = null;
+        mScaledMotionEvent = null;
 
         mCurrentMode = Mode.INTRO;
 
@@ -111,13 +142,14 @@ public class GameView extends View {
      */
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        mMotionEvent = null;
-
+        // 画面解像度に応じてスケール値の計算
         int width = getMeasuredWidth();
         int height = getMeasuredHeight();
 
         mScaleX = (float) width / (float) GameView.GAME_WIDTH;
         mScaleY = (float) height / (float) GameView.GAME_HEIGHT;
+
+        mScaledMotionEvent = new ScaledMotionEvent(mScaleX, mScaleY);
 
         super.onLayout(changed, left, top, right, bottom);
     }
@@ -150,7 +182,7 @@ public class GameView extends View {
                 mIntroMode.init(mGameData);
             }
 
-            mIntroMode.update(mMotionEvent);
+            mIntroMode.update(mScaledMotionEvent);
             mIntroMode.draw(canvas);
 
             if (mIntroMode.mNextMode != mIntroMode.mCurrentMode) {
@@ -166,7 +198,7 @@ public class GameView extends View {
                 mGameMode.init(mGameData);
             }
 
-            mGameMode.update(mMotionEvent);
+            mGameMode.update(mScaledMotionEvent);
             mGameMode.draw(canvas);
 
             if (mGameMode.mNextMode != mGameMode.mCurrentMode) {
@@ -182,7 +214,7 @@ public class GameView extends View {
                 mClearMode.init(mGameData);
             }
 
-            mClearMode.update(mMotionEvent);
+            mClearMode.update(mScaledMotionEvent);
             mClearMode.draw(canvas);
 
             if (mClearMode.mNextMode != mClearMode.mCurrentMode) {
@@ -198,7 +230,7 @@ public class GameView extends View {
                 mOverMode.init(mGameData, mScaleX, mScaleY);
             }
 
-            mOverMode.update(mMotionEvent);
+            mOverMode.update(mScaledMotionEvent);
             mOverMode.draw(canvas);
 
             if (mOverMode.mNextMode != mOverMode.mCurrentMode) {
@@ -210,13 +242,13 @@ public class GameView extends View {
             }
         }
 
-        mMotionEvent = null;
+        mScaledMotionEvent.mMotionEvent = null;
         invalidate();
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        mMotionEvent = event;
+        mScaledMotionEvent.setMotionEvent(event);
 
         return true;
     }

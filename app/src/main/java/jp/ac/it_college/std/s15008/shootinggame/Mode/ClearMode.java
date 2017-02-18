@@ -49,7 +49,7 @@ public class ClearMode {
 
 
         paintScore = new Paint();
-        paintScore.setColor(Color.BLUE);
+        paintScore.setColor(Color.WHITE);
         paintScore.setAntiAlias(true);   //文字をなめらかにする処理
         paintScore.setTextSize(textSize);
         paintScore.setTextAlign(Paint.Align.CENTER);
@@ -88,8 +88,8 @@ public class ClearMode {
             public void run() {
                 mNextMode = GameView.Mode.INTRO;
                 mGameData.mLevel++;
-                if (mGameData.mLevel >= 3) {
-                    mGameData.mLevel = 1;
+                if (mGameData.mLevel > GameView.GameData.LEVEL_MAX) {
+                    mGameData.mLevel = GameView.GameData.LEVEL_DEFAULT;
                 }
                 mTimerHandler.removeCallbacks(mGotoNextMode);
             }
@@ -97,7 +97,8 @@ public class ClearMode {
 
         mTimerHandler.postDelayed(mGotoNextMode, 7000);
 
-        Log.d(TAG, String.format("LEVEL : %d\tSCORE : %d", mGameData.mLevel, mGameData.mScore));
+        // デバッグ出力
+        //Log.d(TAG, String.format("LEVEL : %d\tSCORE : %d", mGameData.mLevel, mGameData.mScore));
     }
 
     public void draw(Canvas canvas) {
@@ -121,19 +122,15 @@ public class ClearMode {
 
     private Paint setDrawLiner(Canvas liner) {
 
-
-
-        //TODO: 変更求む
         liner.drawBitmap(mBitmapLiner, GameView.GAME_WIDTH - line_x, GameView.GAME_HEIGHT / 2 - 200, mPaintLiner);
         liner.drawBitmap(mBitmapLiner, line_x - GameView.GAME_WIDTH, GameView.GAME_HEIGHT / 2 + 200, mPaintLiner);
 
         return mPaintLiner;
     }
 
-    public void update(MotionEvent motionEvent) {
+    public void update(GameView.ScaledMotionEvent scaledMotionEvent) {
         if (!mValueAnimation.isRunning()) {
             startScore = true;
         }
-
     }
 }
