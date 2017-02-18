@@ -140,7 +140,7 @@ public class Player extends BaseObject {
         canvas.drawRect(mRectLifePointBar, mPaintLifePointBar);
 
         // debug 地表
-        canvas.drawRect(mRectGround, dPaint);
+        //canvas.drawRect(mRectGround, dPaint);
     }
 
     public void setAngle(float x, float y) {

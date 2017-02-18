@@ -216,7 +216,7 @@ public class GameMode {
         paint.setColor(Color.RED);
         paint.setTextSize(30);
         int h = GameView.GAME_HEIGHT;
-        canvas.drawText(String.format("TouchX : %f\tTouchY : %f", mTouchX, mTouchY), 0, h - (h / 3), paint);
+        //canvas.drawText(String.format("TouchX : %f\tTouchY : %f", mTouchX, mTouchY), 0, h - (h / 3), paint);
 
         int enemyCount = mEnemyList.size();
         for (Enemy enemy : mEnemyList) {

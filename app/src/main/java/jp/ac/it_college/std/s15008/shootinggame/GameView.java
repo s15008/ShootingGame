@@ -48,8 +48,12 @@ public class GameView extends View {
     private ClearMode mClearMode;
 
     // ゲームプレイデータ
+
     public GameData mGameData;
     public class GameData {
+        public static final int LEVEL_DEFAULT = 1;
+        public static final int LEVEL_MAX = 2;
+
         public int mLevel;
         public int mScore;
 
@@ -58,7 +62,7 @@ public class GameView extends View {
         }
 
         public void init() {
-            mLevel = 1;
+            mLevel = LEVEL_DEFAULT;
             mScore = 0;
         }
     }
@@ -143,7 +147,6 @@ public class GameView extends View {
             // ステージイントロ時の処理
             if (mIntroMode.mCurrentMode == Mode.INIT || mIntroMode.mCurrentMode != Mode.INTRO) {
                 // モードの初期化
-                mGameData.init();
                 mIntroMode.init(mGameData);
             }
 
@@ -202,6 +205,7 @@ public class GameView extends View {
                 // モード遷移
                 mCurrentMode = mOverMode.mNextMode;
                 mOverMode.mCurrentMode = mOverMode.mNextMode;
+                mGameData.init();
                 invalidate();
             }
         }

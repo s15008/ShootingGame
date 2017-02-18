@@ -63,7 +63,7 @@ public class IntroMode {
 
         paintText = new Paint();
         paintText.setColor(Color.RED);
-        paintText.setTextSize(25);
+        paintText.setTextSize(250);
         paintText.setTextAlign(Paint.Align.CENTER);
         this.context = context;
     }
@@ -85,7 +85,7 @@ public class IntroMode {
         };
 
         mTimerHandler.postDelayed(mGotoNextMode, 3000);
-        Log.d(TAG, String.format("LEVEL : %d\tSCORE : %d", mGameData.mLevel, mGameData.mScore));
+        Log.d(TAG, String.format("WAVE : %d", mGameData.mLevel));
     }
 
     // 更新処理
@@ -106,7 +106,7 @@ public class IntroMode {
 
     // 描画処理
     public void draw(Canvas canvas) {
-        canvas.drawText("Intro Mode  LEVEL " + mGameData.mLevel + "  SCORE " + mGameData.mScore,
+        canvas.drawText("WAVE " + mGameData.mLevel,
                 GameView.GAME_WIDTH / 2, GameView.GAME_HEIGHT / 2, paintText);
     }
 }
