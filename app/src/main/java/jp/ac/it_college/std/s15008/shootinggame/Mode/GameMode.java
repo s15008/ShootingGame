@@ -45,6 +45,9 @@ public class GameMode {
     private Paint mPaintBackground;
     private Bitmap mBitmapBackground;
 
+    // エネミー残機UI
+    private int mEnemyCounter;
+
     // キャラクターオブジェクト
     private Player mPlayer;
     private Player mPlayerLeft;
@@ -101,6 +104,9 @@ public class GameMode {
 
         mEnemyList = mEnemyManager.getEnemyList();
 
+        // UI
+        mEnemyCounter = mEnemyList.size();
+
         // モード遷移遅延用
         mTimerHandler = new Handler();
         mGotoNextMode = new Runnable() {
@@ -131,6 +137,7 @@ public class GameMode {
         }
 
         // オブジェクトあたり処理
+        // エネミーとの判定
         for (Enemy enemy : mEnemyList) {
             // 無効なエネミーはスキップする
             if (!enemy.mIsAlive || !enemy.mIsLaunched) {
@@ -141,6 +148,7 @@ public class GameMode {
             for (Bullet bullet : mBulletList) {
                 if (enemy.isHitCircleToCircle(bullet)) {
                     enemy.hit();
+                    mEnemyCounter--;
                     mGameData.mScore += 1000;
                     bullet.hit();
                 }
@@ -150,22 +158,20 @@ public class GameMode {
             if (enemy.isHitGround(mPlayer.mRectGround.top)) {
                 mPlayer.hit();
                 enemy.hit();
-                if (mPlayer.mLifePoint <= 0) {
-                    Log.d(TAG, "LifePoint: " + mPlayer.mLifePoint);
-                    changeGameOverMode();
-                    return;
-                }
+                mEnemyCounter--;
             }
         }
 
-        int enemyCount = mEnemyList.size();
-        for (Enemy enemy : mEnemyList) {
-            if (enemy.mIsLaunched && !enemy.mIsAlive) {
-                enemyCount--;
-                if (enemyCount <= 0) {
-                    changeGameClearMode();
-                }
-            }
+        // ゲームオーバー判定
+        if (mPlayer.mLifePoint <= 0) {
+            changeGameOverMode();
+            return;
+        }
+
+        // ゲームクリアー判定
+        if (mEnemyCounter <= 0) {
+            changeGameClearMode();
+            return;
         }
 
         // タッチ処理
@@ -199,6 +205,11 @@ public class GameMode {
         canvas.drawBitmap(mBitmapBackground, 0, 0, mPaintBackground);
 
         // UI描画
+        final Paint paint = new Paint();
+        paint.setColor(Color.RED);
+        paint.setTextSize(30);
+        int h = GameView.GAME_HEIGHT;
+        canvas.drawText(String.format("ENEMY : %d", mEnemyCounter), 0, paint.getTextSize(), paint);
 
         // オブジェクト描画
         mPlayer.draw(canvas);
@@ -212,10 +223,6 @@ public class GameMode {
         }
 
         // デバッグ
-        final Paint paint = new Paint();
-        paint.setColor(Color.RED);
-        paint.setTextSize(30);
-        int h = GameView.GAME_HEIGHT;
         //canvas.drawText(String.format("TouchX : %f\tTouchY : %f", mTouchX, mTouchY), 0, h - (h / 3), paint);
 
         int enemyCount = mEnemyList.size();
@@ -224,7 +231,6 @@ public class GameMode {
                 enemyCount--;
             }
         }
-        canvas.drawText(String.format("ENEMY : %d", enemyCount), 0, paint.getTextSize(), paint);
     }
 
 
