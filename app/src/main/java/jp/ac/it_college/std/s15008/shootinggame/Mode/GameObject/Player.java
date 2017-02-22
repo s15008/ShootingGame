@@ -108,14 +108,17 @@ public class Player extends BaseObject {
     }
 
     public void hit() {
-        Log.d(TAG, "hit");
         mLifePoint--;
+        if (mLifePoint < 0) {
+            mLifePoint = 0;
+        }
+
+        // ライブバーの長さ再設定
         int left = LIFE_POINT_BAR_X;
         int top = LIFE_POINT_BAR_Y;
         int right = (int) ((double) LIFE_POINT_BAR_W * ((double) mLifePoint / (double) LIFE_POINT_MAX)) + LIFE_POINT_BAR_X;
         int bottom = LIFE_POINT_BAR_Y + LIFE_POINT_BAR_H;
         mRectLifePointBar.set(left, top, right, bottom);
-        Log.d(TAG, "" + mRectLifePointBar.width());
     }
 
     @Override

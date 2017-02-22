@@ -47,6 +47,16 @@ public class GameMode {
 
     // エネミー残機UI
     private int mEnemyCounter;
+    private static final int ENEMY_COUNTER_FRAME_X = 0;
+    private static final int ENEMY_COUNTER_FRAME_Y = 0;
+    private static final int ENEMY_COUNTER_FRAME_WIDTH = 264;
+    private static final int ENEMY_COUNTER_FRAME_HEIGHT = 120;
+    private static final int ENEMY_COUNTER_FONT_SIZE = 100;
+    private static final int ENEMY_COUNTER_FRAME_LEFT_MARGIN = 40;
+    private static final int ENEMY_COUNTER_FRAME_BOTTOM_MARGIN =
+            (ENEMY_COUNTER_FRAME_HEIGHT - ENEMY_COUNTER_FONT_SIZE) / 2;
+    private Bitmap mBitmapEnemyCounterFrame;
+    private final Paint mEnemyCounterTextPaint;
 
     // キャラクターオブジェクト
     private Player mPlayer;
@@ -77,6 +87,13 @@ public class GameMode {
 
         mBulletList = new ArrayList<>();
         mBitmapBullet = getBitmapImageToAssets(context, "game/bullet.png");
+
+        // エネミー残機UI
+        mBitmapEnemyCounterFrame = getBitmapImageToAssets(context, "game/enemy_counter_frame.png");
+        mEnemyCounterTextPaint = new Paint();
+        mEnemyCounterTextPaint.setTextSize(ENEMY_COUNTER_FONT_SIZE);
+        mEnemyCounterTextPaint.setColor(Color.RED);
+        mEnemyCounterTextPaint.setTextAlign(Paint.Align.RIGHT);
 
         mEnemyList = new ArrayList<>();
 
@@ -146,6 +163,9 @@ public class GameMode {
 
             // 対弾
             for (Bullet bullet : mBulletList) {
+                if (!enemy.mIsAlive) {
+                    continue;
+                }
                 if (enemy.isHitCircleToCircle(bullet)) {
                     enemy.hit();
                     mEnemyCounter--;
@@ -193,6 +213,7 @@ public class GameMode {
                 mBulletList.remove(i);
             }
         }
+        Log.d(TAG, "bullets: " + mBulletList.size());
     }
 
     /**
@@ -205,11 +226,12 @@ public class GameMode {
         canvas.drawBitmap(mBitmapBackground, 0, 0, mPaintBackground);
 
         // UI描画
-        final Paint paint = new Paint();
-        paint.setColor(Color.RED);
-        paint.setTextSize(30);
-        int h = GameView.GAME_HEIGHT;
-        canvas.drawText(String.format("ENEMY : %d", mEnemyCounter), 0, paint.getTextSize(), paint);
+        canvas.drawBitmap(mBitmapEnemyCounterFrame,
+                ENEMY_COUNTER_FRAME_X, ENEMY_COUNTER_FRAME_Y, mEnemyCounterTextPaint);
+        canvas.drawText(String.valueOf(mEnemyCounter),
+                ENEMY_COUNTER_FRAME_X + ENEMY_COUNTER_FRAME_WIDTH - ENEMY_COUNTER_FRAME_LEFT_MARGIN,
+                ENEMY_COUNTER_FRAME_Y + ENEMY_COUNTER_FRAME_HEIGHT - ENEMY_COUNTER_FRAME_BOTTOM_MARGIN,
+                mEnemyCounterTextPaint);
 
         // オブジェクト描画
         mPlayer.draw(canvas);
@@ -223,6 +245,10 @@ public class GameMode {
         }
 
         // デバッグ
+        Paint paint = new Paint();
+        paint.setColor(Color.RED);
+        paint.setTextSize(30);
+        int h = GameView.GAME_HEIGHT;
         //canvas.drawText(String.format("TouchX : %f\tTouchY : %f", mTouchX, mTouchY), 0, h - (h / 3), paint);
 
         int enemyCount = mEnemyList.size();
