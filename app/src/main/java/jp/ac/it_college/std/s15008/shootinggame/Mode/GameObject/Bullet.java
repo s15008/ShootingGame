@@ -16,7 +16,7 @@ import jp.ac.it_college.std.s15008.shootinggame.GameView;
 public class Bullet extends BaseObject {
     private static final String TAG = "Bullet";
 
-    private static final float SIZE = 20;
+    private static final float SIZE = 50;
 
     public boolean mIsVisible;
     private Bitmap mBitmap;
@@ -73,5 +73,6 @@ public class Bullet extends BaseObject {
 
     public void hit() {
         Log.d(TAG, "hit");
+        mIsVisible = false;
     }
 }
