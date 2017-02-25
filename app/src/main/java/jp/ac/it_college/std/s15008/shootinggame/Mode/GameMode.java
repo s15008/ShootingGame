@@ -54,7 +54,7 @@ public class GameMode {
     private static final int ENEMY_COUNTER_FONT_SIZE = 100;
     private static final int ENEMY_COUNTER_FRAME_LEFT_MARGIN = 40;
     private static final int ENEMY_COUNTER_FRAME_BOTTOM_MARGIN =
-            (ENEMY_COUNTER_FRAME_HEIGHT - ENEMY_COUNTER_FONT_SIZE) / 2;
+            (ENEMY_COUNTER_FRAME_HEIGHT - ENEMY_COUNTER_FONT_SIZE);
     private Bitmap mBitmapEnemyCounterFrame;
     private final Paint mEnemyCounterTextPaint;
 
@@ -163,9 +163,6 @@ public class GameMode {
 
             // 対弾
             for (Bullet bullet : mBulletList) {
-                if (!enemy.mIsAlive) {
-                    continue;
-                }
                 if (enemy.isHitCircleToCircle(bullet)) {
                     enemy.hit();
                     mEnemyCounter--;
@@ -190,6 +187,7 @@ public class GameMode {
 
         // ゲームクリアー判定
         if (mEnemyCounter <= 0) {
+            mEnemyCounter = 0;
             changeGameClearMode();
             return;
         }
@@ -250,32 +248,6 @@ public class GameMode {
         paint.setTextSize(30);
         int h = GameView.GAME_HEIGHT;
         //canvas.drawText(String.format("TouchX : %f\tTouchY : %f", mTouchX, mTouchY), 0, h - (h / 3), paint);
-
-        int enemyCount = mEnemyList.size();
-        for (Enemy enemy : mEnemyList) {
-            if (enemy.mIsLaunched && !enemy.mIsAlive) {
-                enemyCount--;
-            }
-        }
-    }
-
-
-    class MyButton {
-        private final Paint mRectPaint;
-        private Rect mRect;
-        private int mWidth;
-        private int mHeight;
-
-        public MyButton(int x, int y) {
-            mRectPaint = new Paint(Color.BLUE);
-            mWidth = 100;
-            mHeight = 100;
-            this.mRect = new Rect(x, y, x+mWidth, y+mHeight);
-        }
-
-        public void draw(Canvas canvas) {
-            canvas.drawRect(mRect, mRectPaint);
-        }
     }
 
     /**

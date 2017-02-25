@@ -42,34 +42,4 @@ public class JsonParser {
 
         return enemyDataList;
     }
-
-    /*
-    public String create(GameData jsonData) {
-        JSONObject queryObject = new JSONObject();
-
-        try {
-            queryObject.put("status", jsonData.status);
-            if (jsonData.status == GameData.STATUS_INIT) {
-                // 初期化時の作成
-                queryObject.put("player_name", jsonData.playerName);
-                JSONArray playerList = new JSONArray();
-                for (JsonParser.GameData.PlayerStatus player :jsonData.playerList) {
-                    JSONObject playerJson = new JSONObject();
-                    playerJson.put("name", player.name);
-                    playerJson.put("roll", player.roll);
-                    playerList.put(playerJson);
-                }
-
-                queryObject.put("player_list", playerList);
-            } else if (jsonData.status == GameData.STATUS_NIGHT) {
-                queryObject.put("player_name", jsonData.playerName);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return queryObject.toString();
-
-    }
-    */
 }
