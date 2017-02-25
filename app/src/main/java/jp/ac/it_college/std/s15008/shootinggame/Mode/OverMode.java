@@ -9,7 +9,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.LightingColorFilter;
 import android.graphics.Paint;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -71,16 +73,22 @@ public class OverMode {
         private boolean mIsAnimate;
         private Rect mRectOrigin;
 
+        // デバッグ描画
+        private final Paint mDebugPaint;
+
         public MyImageButton(Bitmap bitmap, int x, int y, int width, int height) {
             mBitmap = bitmap;
             mPaint = new Paint();
-            mPaint.setColor(Color.RED);
-            mPaint.setStyle(Paint.Style.STROKE);
             mRect = new Rect(x, y, (x + width), (y + height));
 
             mValueAnimation = null;
             mIsAnimate = false;
             mRectOrigin = mRect;
+
+            // デバッグ描画
+            mDebugPaint = new Paint();
+            mDebugPaint.setColor(Color.RED);
+            mDebugPaint.setStyle(Paint.Style.STROKE);
         }
 
         public void update() {
@@ -88,7 +96,9 @@ public class OverMode {
 
         public void draw(Canvas canvas) {
             canvas.drawBitmap(mBitmap, mRect.left, mRect.top, mPaint);
-            canvas.drawRect(mRect, mPaint);
+
+            // デバッグ描画
+            //canvas.drawRect(mRect, mDebugPaint);
         }
     }
 
@@ -267,11 +277,12 @@ public class OverMode {
 
     // 描画処理
     public void draw(Canvas canvas) {
+        // 背景フィルター
+        canvas.drawRect(0, 0, GameView.GAME_WIDTH, GameView.GAME_HEIGHT, paintBackground);
+
+        // ボタン
         mButtonLogo.draw(canvas);
         mButtonContinue.draw(canvas);
         mButtonTitleBack.draw(canvas);
-
-        // デバッグ描画
-        canvas.drawRect(0, 0, GameView.GAME_WIDTH, GameView.GAME_HEIGHT, paintBackground);
     }
 }
